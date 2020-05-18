@@ -1,0 +1,372 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Orizzon{% endblock %}
+
+{% block body %}
+<style>
+#map_events
+{
+  width: 100%;
+  height: 350px;
+}
+.chart{
+    height:500px;
+    width:500px;
+}
+.pie-legend {
+	list-style: none;
+	margin: 0;
+	padding: 0;
+}
+.pie-legend span {
+	display: inline-block;
+	width: 14px;
+	height: 14px;
+	border-radius: 100%;
+	margin-right: 16px;
+	margin-bottom: -2px;
+}
+.pie-legend li {
+	margin-bottom: 10px;
+}
+</style>
+<div class="container-feed d-flex m-auto">
+    <div class="col-sm-8 pr-0">
+                <div class="border-bottom mr-3 border-right d-flex justify-content-between">
+            <a href="{{ path('home') }}" class="pt-2 pl-1 pb-2">
+                <img src="{{ asset('images/feed/orizzon3.png') }}" alt="Logo" width="55" height="55" style="cursor:pointer;" />
+            </a>
+            <div class="col-sm-8 pt-4">
+                {{ form_start(formSearch, { 'attr' : { 'role': 'search' } }) }}
+                    <div class="input-group input-group-sm">
+                      {{ form_widget(formSearch.content, { 'attr': {'class': 'form-control w-75', 'placeholder': 'Rechercher une personne ou une organisation' } }) }}
+                      <div class="input-group-append">
+                        <button type="submit" class="btn btn-outline-secondary border"><i class="fa fa-search"></i></button>
+                      </div>
+                    </div>
+                {{ form_end(formSearch) }}
+            </div>
+            <div class="pt-4 mr-3">
+                <a href="{{ path('home') }}"><img src="{{ asset('images/feed/home.png') }}" alt="Accueil" title="Accueil" class="mr-3" width="22" /></a>
+                <a href=""><img src="{{ asset('images/feed/messenger.png') }}" alt="Messages" title="Messages" class="mr-3" width="22" /></a>
+                <a href="{{ path('logout') }}"><img src="{{ asset('images/feed/logout.png') }}" alt="Se déconnecter" title="Se déconnecter" width="22" /></a>
+            </div>
+        </div>
+        <div class="d-flex">
+            <div class="col-sm-3 pt-3 pl-0">
+                <div class="border rounded mb-3" style="background:#fff;font-size:12px;">
+                    <h6 class="pt-1 pb-1 text-center" style="background:#82b8d6;">PROFIL</h6>
+                    <div class="pl-2 pb-2 pr-2">
+                      <a href="{{ path('profile', {'username': app.user.username}) }}" title="Cliquez pour accéder à votre profil" class="d-flex align-items-center box-left-link">
+                        <div style="width:20px;height:20px;">
+                          <img src="/uploads/posts/0ydxhjkx_400x400-5e2a43a4a0d88.jpeg" class="rounded" style="width:100%;"/>
+                        </div>
+                        <div class="pl-2">@{{ app.user.username }}</div>
+                      </a>
+                      <div class="d-flex pt-2 align-items-center">
+                        <div style="width:20px;height:20px;">
+                          <img src="{{ asset('images/feed/score.png') }}" class="rounded" style="width:100%;"/>
+                        </div>
+                        <div class="pl-2">Score : {{ app.user.score }} pts</div>
+                      </div>
+                      <div class="pt-2">
+                        <div class="d-flex align-items-end">
+                          <div style="width:20px;height:20px;">
+                            <img src="{{ asset('images/feed/event.png') }}" class="rounded" style="width:100%;"/>
+                          </div>
+                          <div class="pl-2">
+                            <div>Événement prévu --></div>
+                          </div>
+                        </div>
+                        <div class="pt-1 text-break"><strong>03/02/20 :</strong> Sortie de Orizzon (maybe)</div>
+                      </div>
+                    </div>
+                </div>
+                <div class="border rounded mb-3" style="background:#fff;">
+                    <h6 class="pt-1 pb-1 text-center" style="background:#82b8d6;">NAVIGATION</h6>
+                    <div class="pl-2 pb-2 pr-2">
+                      <a href="" class="d-flex align-items-center box-left-link">
+                          <div style="width:20px;height:20px;">
+                            <img src="{{ asset('images/feed/events.png') }}" class="rounded" style="width:100%;"/>
+                          </div>
+                          <div class="pl-2">Événements</div>
+                      </a>
+                    </div>
+                </div>
+                <div class="border rounded mb-3" style="background:#fff;">
+                    <h6 class="pt-1 pb-1 text-center" style="background:#82b8d6;">TOP ORGA</h6>
+                    <div class="pl-2 pb-2 pr-2">
+                      <div class="d-flex justify-content-between col-sm-12 pb-2">
+                        <div>Semaine</div>
+                        <div>|</div>
+                        <div>Général</div>
+                      </div>
+                      <div class="pt-2 pl-3">
+                        <div class="d-flex pb-2">                          
+                          <div style="width:20px;height:20px;">
+                            <img src="{{ asset('images/feed/first.png') }}" class="rounded" style="width:100%;"/>
+                          </div>
+                          <div class="pl-2">@esteban (0)</div>
+                        </div>
+                        <div class="d-flex pb-2">                          
+                          <div style="width:20px;height:20px;">
+                            <img src="{{ asset('images/feed/second.png') }}" class="rounded" style="width:100%;"/>
+                          </div>
+                          <div class="pl-2">@sebastien (0)</div>
+                        </div>
+                        <div class="d-flex">                          
+                          <div style="width:20px;height:20px;">
+                            <img src="{{ asset('images/feed/third.png') }}" class="rounded" style="width:100%;"/>
+                          </div>
+                          <div class="pl-2">@damien (0)</div>
+                        </div>
+                      </div>
+                    </div>
+                </div>
+                <div class="border rounded mb-3" style="background:#fff;">
+                    <h6 class="pt-1 pb-1 text-center" style="background:#82b8d6;">TOP SCORE</h6>
+                    <div class="pl-2 pb-2 pr-2">
+                      <div class="pt-1 pl-3">
+                        <div class="d-flex pb-2">                          
+                          <div style="width:20px;height:20px;">
+                            <img src="{{ asset('images/feed/first.png') }}" class="rounded" style="width:100%;"/>
+                          </div>
+                          <div class="pl-2">@esteban (0)</div>
+                        </div>
+                        <div class="d-flex pb-2">                          
+                          <div style="width:20px;height:20px;">
+                            <img src="{{ asset('images/feed/second.png') }}" class="rounded" style="width:100%;"/>
+                          </div>
+                          <div class="pl-2">@sebastien (0)</div>
+                        </div>
+                        <div class="d-flex">                          
+                          <div style="width:20px;height:20px;">
+                            <img src="{{ asset('images/feed/third.png') }}" class="rounded" style="width:100%;"/>
+                          </div>
+                          <div class="pl-2">@damien (0)</div>
+                        </div>
+                      </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-sm-9 pt-3">
+                <div class="rounded border" style="background:#fff;">
+                    <h6 class="pt-1 pb-1" style="background:#82b8d6;margin:0;"><span class="pl-3">Page des statistiques</span></h6>
+                    <div class="col-md-9 my-5 mx-auto">
+                        <div class="card text-center shadow">
+                            <div class="card-header text-left"><b>Chart.js</b> - Pie Chart with Legends</div>
+                            <div class="card-body">
+                                <div class="chart">
+                                    <canvas id="property_types" class="pie"></canvas>
+                                    <div id="pie_legend" class="py-3 text-left col-md-7 mx-auto"><ul class='forets'><li><span style='background-color:#000'>arbres</span></li><li><span style='background-color:#000'>arbres</span></li></ul></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-sm-4 pt-4">
+        <div class="border rounded mb-3">          
+            <h6 class="pt-1 pb-1 text-center" style="background:#82b8d6;">CARTE</h6>
+            <div id="map_events"></div>
+        </div>
+        <div class="border rounded">
+            <h6 class="pt-1 pb-1 text-center" style="background:#82b8d6;">PUBLICITE</h6>
+        </div>
+    </div>
+</div>
+<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyD6R0tbZaz-oEA1n3sx-33MlP43qFN2gew"></script>
+<script src="{{ asset('assets/js/statistics.js') }}"></script>
+
+<script>
+$(document).ready(function(){
+    var myLatLng = {lat: {{ app.user.latitude }}, lng: {{ app.user.longitude }} };
+
+    var map = new google.maps.Map(document.getElementById('map_events'), {
+      zoom: 11,
+      center: myLatLng,
+      mapTypeControl: false,
+      styles: [
+  {
+    "elementType": "geometry",
+    "stylers": [
+      {
+        "color": "#f5f5f5"
+      }
+    ]
+  },
+  {
+    "featureType": "administrative",
+    "stylers": [
+      {
+        "visibility": "off"
+      }
+    ]
+  },
+  {
+    "featureType": "administrative.locality",
+    "elementType": "labels.text",
+    "stylers": [
+      {
+        "color": "#000000"
+      },
+      {
+        "visibility": "simplified"
+      }
+    ]
+  },
+  {
+    "featureType": "administrative.neighborhood",
+    "elementType": "geometry",
+    "stylers": [
+      {
+        "color": "#0080ff"
+      }
+    ]
+  },
+  {
+    "featureType": "administrative.neighborhood",
+    "elementType": "labels",
+    "stylers": [
+      {
+        "color": "#000000"
+      },
+      {
+        "visibility": "simplified"
+      }
+    ]
+  },
+  {
+    "featureType": "administrative.province",
+    "elementType": "labels",
+    "stylers": [
+      {
+        "visibility": "simplified"
+      },
+      {
+        "weight": 8
+      }
+    ]
+  },
+  {
+    "featureType": "poi",
+    "elementType": "labels.icon",
+    "stylers": [
+      {
+        "visibility": "off"
+      }
+    ]
+  },
+  {
+    "featureType": "poi.school",
+    "elementType": "labels.icon",
+    "stylers": [
+      {
+        "visibility": "off"
+      }
+    ]
+  },
+  {
+    "featureType": "road",
+    "elementType": "geometry",
+    "stylers": [
+      {
+        "color": "#c5c5c5"
+      }
+    ]
+  },
+  {
+    "featureType": "road",
+    "elementType": "labels",
+    "stylers": [
+      {
+        "weight": 0.5
+      }
+    ]
+  },
+  {
+    "featureType": "road",
+    "elementType": "labels.icon",
+    "stylers": [
+      {
+        "visibility": "off"
+      }
+    ]
+  },
+  {
+    "featureType": "road",
+    "elementType": "labels.text.fill",
+    "stylers": [
+      {
+        "color": "#000000"
+      }
+    ]
+  },
+  {
+    "featureType": "road.arterial",
+    "elementType": "labels",
+    "stylers": [
+      {
+        "visibility": "simplified"
+      }
+    ]
+  },
+  {
+    "featureType": "road.arterial",
+    "elementType": "labels.icon",
+    "stylers": [
+      {
+        "visibility": "off"
+      }
+    ]
+  },
+  {
+    "featureType": "water",
+    "stylers": [
+      {
+        "color": "#afe4ff"
+      }
+    ]
+  }
+]
+  });
+  mapEvents();
+  function mapEvents() {
+    $.ajax({
+        url: "{{ path('ajax_map_events') }}",
+        type : 'POST',
+        dataType : 'html',
+    }).done(function(html) {
+      var events = html.split("<event");
+      events.forEach(function(e) {
+          var title = e.replace(/<id>[" '^;&=/()-–,<>.0-9a-zA-Z]+ <title>/g, '').replace(/<\/title> [" '^;&=/()-–,<>.0-9a-zA-Z]+/g, '');
+          var lat = e.replace(/<id>[" '^;&=/()-–,<>.0-9a-zA-Z]+ <lat>/g, '').replace(/<\/lat> [" ^';&=/()-–,<>.0-9a-zA-Z]+/g, '');
+          var lng = e.replace(/<id>[" '^;&=/()-–,<>.0-9a-zA-Z]+ <lng>/g, '').replace(/<\/lng>/g, '');
+
+          title = decodeHTML(title);
+
+          var glatLng = new google.maps.LatLng(lat, lng);
+          var infowindow1 = new google.maps.InfoWindow();
+          var image = {
+              url: "{{ asset('images/logo2.png') }}",
+              scaledSize: new google.maps.Size(45, 40)
+          };
+          var markerE = new google.maps.Marker({
+              position: glatLng,
+              icon: image,
+              title: title,
+              href: "<a class='' href='#'>Cliquez pour plus d'informations sur la " + title + "</a>"
+          });
+          google.maps.event.addListener(markerE, 'click', function() {
+              infowindow1.setContent(this.href);
+              infowindow1.open(map, this);
+          });
+          markerE.setMap(map);
+        });
+    });
+}
+});
+</script>
+{% endblock %}

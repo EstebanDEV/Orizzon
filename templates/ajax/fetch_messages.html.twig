@@ -1,0 +1,24 @@
+{% for message in messages|reverse %}
+{% if message.user.id != app.user.id %}
+<div class="d-flex justify-content-start mb-4 msg select-msg" data-id="{{ message.id }}">
+    {% if message.user.image != "" %}
+    <a href="{{ path('profile', {'username': message.user.username }) }}" style="width:50px;height:50px;">
+        <img src="/uploads/profiles/{{message.user.image}}" class="rounded" style="width:100%;height:100%;" />
+    </a>
+    {% else %}
+    <a href="{{ path('profile', {'username': message.user.username }) }}" style="width:50px;height:50px;">
+        <img src="{{ asset('images/feed/user.png') }}" class="rounded" style="width:100%;" />
+    </a>
+    {% endif %}
+    <div class="msg_container" title="{{ message.date|date('d/m/y H:i') }}">
+        {{ message.content|raw }}
+    </div>
+</div>
+{% else %}
+<div class="d-flex justify-content-end mb-4 select-msg" data-id="{{ message.id }}">
+    <div class="msg_container_send" title="{{ message.date|date('d/m/y H:i') }}">
+        {{ message.content|raw }}
+    </div>
+</div>
+{% endif %}
+{% endfor %}

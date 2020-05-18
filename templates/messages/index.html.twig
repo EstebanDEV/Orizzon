@@ -1,0 +1,38 @@
+{% extends 'global.html.twig' %}
+
+{% block title %}Messages{% endblock %}
+
+{% block content %}
+<div class="col-sm-9 pt-3">
+    <div class="rounded border" style="background:#fff;">
+        <h6 class="pt-1 pb-1" style="background:#82b8d6;margin:0;"><span class="pl-3">Sélectionner une discussion</span></h6>
+        <div class="pb-3" id="discussions">
+          <div class="p-3 text-center" style="background:#fff;">
+            <img src="{{ asset('images/feed/ajax-loader.gif') }}">
+          </div>
+        </div>
+    </div>
+    <div class="col-sm-12 text-center mt-2 mb-3 border pt-2 pb-2 rounded" data-offset="10" id="more_disc" onclick="fetchDiscussions();" style="background:#fff">Afficher plus de discussions</div>
+</div>
+{% endblock %}
+{% block script %}
+<script>
+$(document).ready(function(){
+  $.ajax({
+    url : "/ajax/fetchdiscussions",
+    type : 'POST',
+    data : {
+        'offset' : encodeURIComponent(0),
+        'date' : encodeURIComponent(unixDate)
+    },
+    dataType : 'html',              
+  }).done(function(html) {
+      if (html == "") {
+          $('#discussions').html('<div class="text-center p-2">Aucune discussion trouvée.</div>');
+      } else {
+          $('#discussions').html(html);
+      }
+  });
+});
+</script>
+{% endblock %}

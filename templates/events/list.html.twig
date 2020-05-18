@@ -1,0 +1,46 @@
+{% extends 'global.html.twig' %}
+
+{% block title %}Événements{% endblock %}
+
+{% block content %}
+<div class="col-sm-9 pt-3">
+  {% for message in app.flashes('error') %}
+  <div class="alert alert-danger">
+      {{ message }}
+  </div>
+  {% endfor %}
+  {% for message in app.flashes('success') %}
+  <div class="alert alert-success">
+      {{ message }}
+  </div>
+  {% endfor %}
+  <h6 class="pt-1 pb-1 text-center rounded" style="background:#82b8d6;"><span class="pl-3">Derniers événements lancés</span></h6>
+  <div id="events">
+      <div class="p-3 text-center border rounded" style="background:#fff;">
+        <img src="{{ asset('images/feed/ajax-loader.gif') }}">
+      </div>
+  </div>
+  <div class="col-sm-12 text-center mt-2 mb-3 border pt-2 pb-2 rounded" data-offset="5" id="more_event" onclick="fetchEvents();" style="background:#fff">Afficher plus d'événements</div>
+</div>
+{% endblock %}
+{% block script %}
+<script>
+$(document).ready(function(){
+  $.ajax({
+    url : "{{ path('ajax_fetch_events') }}",
+    type : 'POST',
+    data : {
+        'offset' : encodeURIComponent(0),
+        'date' : encodeURIComponent(unixDate)
+    },
+    dataType : 'html',              
+  }).done(function(html) {
+      if (html == "") {
+          $('#events').html('<div class="text-center p-2">Aucun événement trouvé.</div>');
+      } else {
+          $('#events').html(html);
+      }
+  });
+});
+</script>
+{% endblock %}

@@ -1,0 +1,170 @@
+body {
+    background: #f0f0f0;
+    color: #3c3c3c;
+    font-size: 13px;
+}
+h6 {
+    color: #fff;
+    border: 0;
+    border-top-left-radius: 3px;
+    border-top-right-radius: 3px;
+}
+a, a:hover {
+    color: #3c3c3c;
+}
+#bloc-login {
+    margin-top: 150px;
+}
+.container-feed {
+    max-width: 1300px;
+    width: 1300px;
+}
+.resize-none {
+    resize: none;
+}
+#participate_btn:hover, #edit_btn:hover, #subscribe_btn:hover {
+    background: #d78196!important;
+    text-decoration: none;
+}
+#sendmsg_btn:hover {
+    background: #6ea4c2!important;
+    text-decoration: none;
+}
+.like-btn:hover, .comment-btn:hover, .share-btn:hover {
+    background: #f0f0f0;
+    cursor: pointer;
+}
+.box-left-link:hover {
+  text-decoration: none;
+  background: #f0f0f0;
+}
+.list-box-msg:hover, .box-search:hover {
+    background: #f0f0f0;
+}
+#msg_container:focus {
+    outline: 0px solid transparent;
+}
+
+#msg_contenteditable_placeholder::before {
+    content: attr(data-placeholder);
+    position: absolute;
+    color: #C0C0C0;
+    left: 17px;
+    top: 4px;
+    font-size: 14px;
+    pointer-events: none;
+}
+#more_post:hover, #more_follo:hover, #more_disc:hover, #more_mes:hover, #more_search:hover, #more_event:hover, #more_myevent:hover {
+    background: #f0f0f0!important;
+    text-decoration: none;
+    cursor: pointer;
+}
+.more_com:hover {
+    text-decoration: underline;
+    cursor: pointer;
+}
+#participate_btn:hover, #edit_btn:hover {
+    background: #d78196!important;
+    text-decoration: none;
+}
+.bloc-item:hover {
+  background: #f0f0f0;
+}
+#post_submit:hover {
+    background: #d78196!important;
+}
+#post_container:focus {
+    outline: 0px solid transparent;
+}
+span.text_post {
+    display: block;
+}
+#post_contenteditable_placeholder::before {
+    content: attr(data-placeholder);
+    position: absolute;
+    color: #C0C0C0;
+    left: 17px;
+    top: 2px;
+    font-size: 17px;
+    pointer-events: none;
+}
+.post-text div {
+    padding-bottom: 10px;
+}
+.lbl-img:hover {
+  background: #f0f0f0;
+}
+#post_image {
+    position: absolute;
+    top: 0; 
+    left: 0;
+    width: 125px;
+    padding: 14px 0;
+    opacity: 0;
+    cursor: pointer;
+  }
+  label[for="post_image"] {
+    padding: 7px 15px;
+    background: #fff;
+    color: #000;
+    font-size: 1em;
+    cursor: pointer;
+    margin-top: 1rem;
+  }
+  #btn_valid:hover {
+    background: #d78196!important;
+}
+label[for="event_image"] {
+    padding: 7px 15px;
+    background: #fff;
+    color: #000;
+    font-size: 1em;
+    cursor: pointer;
+    margin-top: 1rem;
+  }
+  #event_date {
+    display: flex;
+  }
+  #create_event select {
+    width: 100px;
+  }
+#settings_image {
+    position: absolute;
+    top: 0; 
+    left: 0;
+    width: 125px;
+    padding: 14px 0;
+    opacity: 0;
+    cursor: pointer;
+  }
+label[for="settings_image"] {
+  padding: 7px 15px;
+  background: #fff;
+  color: #000;
+  font-size: 1em;
+  cursor: pointer;
+  margin-top: 1rem;
+}
+  .progress {
+    position: relative;
+      height: 25px;
+  }
+  .progress > .progress-type {
+      position: absolute;
+      left: 0px;
+      font-weight: 800;
+      padding: 3px 30px 2px 10px;
+      color: rgb(255, 255, 255);
+      background-color: rgba(25, 25, 25, 0.2);
+  }
+  .progress > .progress-completed {
+      position: absolute;
+      right: 0px;
+      font-weight: 800;
+      padding: 3px 10px 2px;
+  }
+#map_events
+{
+  width: 100%;
+  height: 350px;
+}

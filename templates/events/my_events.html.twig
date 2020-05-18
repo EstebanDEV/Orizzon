@@ -1,0 +1,75 @@
+{% extends 'global.html.twig' %}
+
+{% block title %}Événements / {{ userEvent.name }} (@{{userEvent.username}}){% endblock %}
+
+{% block content %}
+<div class="col-sm-9 pt-3">
+  {% for message in app.flashes('error') %}
+  <div class="alert alert-danger">
+      {{ message }}
+  </div>
+  {% endfor %}
+  {% for message in app.flashes('success') %}
+  <div class="alert alert-success">
+      {{ message }}
+  </div>
+  {% endfor %}
+  <h6 class="pt-1 pb-1 text-center rounded" style="background:#82b8d6;"><span class="pl-3">Vos événements</span></h6>
+  <div id="my_events">
+      <div class="p-3 text-center border rounded" style="background:#fff;">
+        <img src="{{ asset('images/feed/ajax-loader.gif') }}">
+      </div>
+  </div>
+  <div class="col-sm-12 text-center mt-2 mb-3 border pt-2 pb-2 rounded" data-offset="5" id="more_myevent" onclick="fetchMyEvents();" style="background:#fff">Afficher plus d'événements</div>
+</div>
+{% endblock %}
+{% block script %}
+<script>
+$(document).ready(function(){
+  $.ajax({
+    url : "{{ path('ajax_fetch_myevents') }}",
+    type : 'POST',
+    data : {
+        'offset' : encodeURIComponent(0),
+        'date' : encodeURIComponent(unixDate),
+        'user' : encodeURIComponent({{ userEvent.id }})
+    },
+    dataType : 'html',              
+  }).done(function(html) {
+      if (html == "") {
+          $('#my_events').html('<div class="text-center p-2">Aucun événement trouvé.</div>');
+      } else {
+          $('#my_events').html(html);
+      }
+  });
+});
+
+var loadEvents = false;
+
+function fetchMyEvents() {
+    if (loadEvents == false) {
+        loadEvents = true;
+        $('#more_myevent').html('<img src="http://127.0.0.1:8000/images/feed/ajax-loader.gif" />');
+        $.ajax({
+            url : "{{ path('ajax_fetch_myevents') }}",
+            type : 'POST',
+            data : {
+                'offset' :  encodeURIComponent($('#more_myevent').data('offset')),
+                'date' : encodeURIComponent(unixDate),
+                'user' : encodeURIComponent({{ userEvent.id }})
+            },
+            dataType : 'html',              
+        }).done(function(html) {
+            if (html == "") {
+                $('#more_myevent').remove(); 
+            } else {
+                $('#my_events').append(html); 
+                $('#more_myevent').html("Afficher plus d'événements");
+                $('#more_myevent').data('offset', $('#more_myevent').data('offset') + 5);
+                loadEvents = false;
+            }
+        });
+    }
+}
+</script>
+{% endblock %}

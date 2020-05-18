@@ -1,0 +1,128 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Inscription sur Orizzon / Seconde étape{% endblock %}
+
+{% block content %}
+<style>
+body {
+    background: url("http://127.0.0.1:8000/images/background1.jpg") no-repeat fixed;
+    background-size: cover;
+}
+.btn-reg:hover {
+    background: #d78196!important;
+}
+.brand_logo_container {
+    position: absolute;
+    height: 170px;
+    width: 170px;
+    top: -75px;
+    border-radius: 50%;
+    background: #82b8d6;
+    padding: 10px;
+    text-align: center;
+}
+.brand_logo {
+    height: 150px;
+    width: 150px;
+    border-radius: 50%;
+    border: 2px solid white;
+}
+</style>
+<div class="container">
+    <div id="bloc-login" class="mb-3">
+        <div class="border border-secondary m-auto col-sm-5 pt-5 pl-5 pr-5 pb-1 shadow rounded" style="background:rgba(255,255,255,0.2);">
+            <div class="d-flex justify-content-center" style="margin-bottom:80px;">
+                <div class="brand_logo_container">
+                    <img src="{{ asset('images/feed/orizzon3.png') }}" class="brand_logo" alt="Logo">
+                </div>
+            </div>
+            {% for message in app.flashes('error') %}
+            <div class="alert alert-danger">
+                {{ message }}
+            </div>
+            {% endfor %}
+            {% for message in app.flashes('success') %}
+            <div class="alert alert-success">
+                {{ message }}
+            </div>
+            {% endfor %}
+            {{ form_start(form) }}
+            {% if type == "0" %}
+            <div class="form-group">
+                <input name="firstname" class="form-control" placeholder="Prénom" />
+            </div>
+            <div class="form-group">
+                <input name="lastname" class="form-control" placeholder="Nom" />
+            </div>
+            {% endif %}
+            {% if type == "1" %}
+            <div class="form-group">
+                <input name="society_name" maxlength="50" class="form-control" placeholder="Nom de l'organisation" />
+                <small class="form-text">50 caractères maximum.</small>
+            </div>
+            {% endif %}
+            {% if form_errors(form.username) %}
+            <div class="alert alert-danger">
+                {{ form_errors(form.username) }}
+            </div>
+            {% endif %}
+            <div class="form-group">
+                {{ form_widget(form.username, {'attr': {'class': 'form-control', 'placeholder': 'Nom d\'utilisateur' } }) }}
+                <small class="form-text">Entre 3 et 15 caractères. Ne peut comporter les caractères : {, }, &, %, /, \, ? et #.</small>
+            </div>
+            {% if form_errors(form.email) %}
+            <div class="alert alert-danger">
+                {{ form_errors(form.email) }}
+            </div>
+            {% endif %}
+            <div class="form-group">
+                {{ form_widget(form.email, {'attr': {'class': 'form-control', 'placeholder': 'Adresse email' } }) }}
+                <small class="form-text">Adresse valide obligatoire.</small>
+            </div>
+            {% if form_errors(form.postalCode) %}
+            <div class="alert alert-danger">
+                {{ form_errors(form.postalCode) }}
+            </div>
+            {% endif %}
+            <div class="form-group">
+                {{ form_widget(form.postalCode, {'attr': {'class': 'form-control', 'placeholder': 'Code postal' } }) }}
+                <small class="form-text">Code postal français valide obligatoire.</small>
+            </div>
+            {% if form_errors(form.plainPassword.first) %}
+            <div class="alert alert-danger">
+                {{ form_errors(form.plainPassword.first) }}
+            </div>
+            {% endif %}
+            <div class="form-group">
+                {{ form_widget(form.plainPassword.first, {'attr': {'class': 'form-control', 'placeholder': 'Mot de passe' } }) }}
+                <small class="form-text">8 caractères minimum. Doit contenir une majuscule, une minuscule et un chiffre au minimum.</small>
+            </div>
+            {% if form_errors(form.plainPassword.second) %}
+            <div class="alert alert-danger">
+                {{ form_errors(form.plainPassword.second) }}
+            </div>
+            {% endif %}
+            <div class="form-group">
+                {{ form_widget(form.plainPassword.second, {'attr': {'class': 'form-control', 'placeholder': 'Retapez le mot de passe' } }) }}
+            </div>
+            {% if form_errors(form.captchaCode) %}
+            <div class="alert alert-danger">
+                {{ form_errors(form.captchaCode) }}
+            </div>
+            {% endif %}
+            <div class="form-group">
+                {{ form_widget(form.captchaCode, {'attr': {'class': 'form-control', 'placeholder': '' } }) }}
+            </div>
+            <div class="form-group row mt-5">
+                <div class="col-sm-6">
+                    <a href="{{ path('user_registration_before') }}" class="btn btn-info col-sm-12 rounded-pill">Retour</a>
+                </div>
+                <div class="col-sm-6">
+                    <button type="submit" class="btn btn-reg col-sm-12 rounded-pill" style="background:#ff8196;color:#fff;">Valider</button>
+                </div>
+            </div>
+            {{ form_end(form) }}
+        </div>
+    </div>
+</div>
+{% endblock %}

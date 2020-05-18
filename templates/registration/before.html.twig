@@ -1,0 +1,62 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Inscription sur Orizzon / Première étape{% endblock %}
+
+{% block content %}
+<style>
+body {
+    background: url("http://127.0.0.1:8000/images/background1.jpg") no-repeat fixed;
+    background-size: cover;
+}
+.btn-reg:hover {
+    background: #d78196!important;
+}
+.brand_logo_container {
+    position: absolute;
+    height: 170px;
+    width: 170px;
+    top: -75px;
+    border-radius: 50%;
+    background: #82b8d6;
+    padding: 10px;
+    text-align: center;
+}
+.brand_logo {
+    height: 150px;
+    width: 150px;
+    border-radius: 50%;
+    border: 2px solid white;
+}
+</style>
+<div class="container">
+    <div id="bloc-login">
+        <div class="border border-secondary m-auto col-sm-5 pt-5 pl-5 pr-5 pb-1 text-center shadow rounded" style="background:rgba(255,255,255,0.2);">
+            <div class="d-flex justify-content-center" style="margin-bottom:80px;">
+                <div class="brand_logo_container">
+                    <img src="{{ asset('images/feed/orizzon3.png') }}" class="brand_logo" alt="Logo">
+                </div>
+            </div>
+            {% for message in app.flashes('error') %}
+            <div class="alert alert-success">
+                {{ message }}
+            </div>
+            {% endfor %}
+            <form name="step1" method="post">
+                <select id="select_type" name="type" class="form-control">
+                    <option value="">Vous êtes ...</option>
+                    <option value="0">Un particulier</option>
+                    <option value="1">Une organisation</option>
+                </select>
+                <div class="form-group row mt-5">
+                    <div class="col-sm-6">
+                        <a href="{{ path('index') }}" class="btn btn-info col-sm-12 rounded-pill">Retour</a>
+                    </div>
+                    <div class="col-sm-6">
+                        <button type="submit" class="btn btn-reg col-sm-12 rounded-pill" style="background:#ff8196;color:#fff;">Suivant</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,109 @@
+{% extends 'global.html.twig' %}
+
+{% block title %}Éditer un événement{% endblock %}
+
+{% block content %}
+<div class="col-sm-9 pt-3">
+    {% for message in app.flashes('error') %}
+    <div class="alert alert-danger">
+        {{ message }}
+    </div>
+    {% endfor %}
+    {% for message in app.flashes('success') %}
+    <div class="alert alert-success">
+        {{ message }}
+    </div>
+    {% endfor %}
+    <div class="rounded border" style="background:#fff;">
+      <h6 class="pt-1 pb-1 text-center" style="background:#82b8d6;"><span class="pl-3">Éditer un événement</span></h6>
+      <div class="pt-2 pb-3 pl-3 pr-3">
+        <div style="width:550px;" class="m-auto text-center">
+          {% if event.image != "" %}
+          <img id="img_preview" src="/uploads/events/{{event.image}}" style="max-width:100%;max-height:400px;" />
+          {% else %}
+          <img id="img_preview" src="{{ asset('images/feed/500_250.png') }}" style="max-width:100%;max-height:400px;" />
+          {% endif %}
+        </div> 
+        {{ form_start(form, {'attr': {'class': 'mt-3'}}) }} 
+          <div>
+              {{ form_errors(form.image) }}
+              <div class="d-flex align-items-center">
+                {{ form_label(form.image, null, { 'label_attr' : { 'class': 'border rounded-pill lbl-img p-2 mb-3' } }) }}
+                <div class="text-secondary ml-3">Taille max : 550px / 400px (2Mo)</div>
+              </div>
+              {{ form_widget(form.image, { 'attr': {'onchange': 'readURL(this);', 'class': 'd-none'} }) }}
+          </div>
+          {% if form_errors(form.name) %}
+          <div class="alert alert-danger">
+              {{ form_errors(form.name) }}
+          </div>
+          {% endif %}
+          <div class="form-group">
+              {{ form_widget(form.name, {'attr': {'class': 'form-control resize-none', 'placeholder': "Nom de l'événement (Entre 5 et 50 caractères)" } }) }}
+          </div>
+          {% if form_errors(form.content) %}
+          <div class="alert alert-danger">
+              {{ form_errors(form.content) }}
+          </div>
+          {% endif %}
+          <div class="form-group">
+              {{ form_widget(form.content, {'attr': {'class': 'form-control resize-none', 'placeholder': "Description de l'événement (Max 500 caractères)" } }) }}
+          </div>
+          {% if form_errors(form.date) %}
+          <div class="alert alert-danger">
+              {{ form_errors(form.date) }}
+          </div>
+          {% endif %}
+          <div class="form-group">
+            <div class="mb-2">Date de l'événement :</div>
+            {{ form_widget(form.date, {'attr': {'class': '' } }) }}
+          </div>
+          {% if form_errors(form.address) %}
+          <div class="alert alert-danger">
+              {{ form_errors(form.address) }}
+          </div>
+          {% endif %}
+          <div class="form-group">
+              {{ form_widget(form.address, {'attr': {'class': 'form-control', 'placeholder': "Adresse de l'événement (Max 100 caractères)"} }) }}
+          </div>
+          <div class="form-group">
+            <div>Voulez-vous afficher cet événement sur la carte?</div>
+            <div class="mt-2">
+              {% if event.map == 0 %}
+              <input type="radio" id="1" name="map" value="1">
+              <label for="1">Oui</label>
+              <input type="radio" id="0" class="ml-3" name="map" value="0" checked>
+              <label for="0">Non</label>
+              {% else %}
+              <input type="radio" id="1" name="map" value="1" checked>
+              <label for="1">Oui</label>
+              <input type="radio" id="0" class="ml-3" name="map" value="0">
+              <label for="0">Non</label>
+              {% endif %}
+            </div>
+            <div class="mt-2">Si oui, veuillez vous rendre sur <a href="https://www.coordonnees-gps.fr/" class="font-weight-bold" target="_blank">ce site en cliquant ici</a> et récupérer la longitude et la latitude à partir de l'adresse où se déroulera votre événement.</div>
+          </div>
+          {% if form_errors(form.longitude) %}
+          <div class="alert alert-danger">
+              {{ form_errors(form.longitude) }}
+          </div>
+          {% endif %}
+          <div class="form-group">
+              {{ form_widget(form.longitude, {'attr': {'class': 'form-control', 'placeholder': "Longitude"} }) }}
+          </div>
+          {% if form_errors(form.latitude) %}
+          <div class="alert alert-danger">
+              {{ form_errors(form.latitude) }}
+          </div>
+          {% endif %}
+          <div class="form-group">
+              {{ form_widget(form.latitude, {'attr': {'class': 'form-control', 'placeholder': "Latitude"} }) }}
+          </div>
+          <div>
+            <button type="submit" id="btn_valid" class="btn btn-reg form-control-sm rounded-pill pl-5 pr-5 mt-2" style="background:#eab0af;color:#fff;">Valider</button>
+          </div>
+        {{ form_end(form) }}
+      </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,80 @@
+{% extends 'global.html.twig' %}
+
+{% block title %}Éditer mon profil{% endblock %}
+
+{% block content %}
+<div class="col-sm-9 pt-3">
+    {% for message in app.flashes('error') %}
+    <div class="alert alert-danger">
+        {{ message }}
+    </div>
+    {% endfor %}
+    {% for message in app.flashes('success') %}
+    <div class="alert alert-success">
+        {{ message }}
+    </div>
+    {% endfor %}
+    <div class="rounded border" style="background:#fff;">
+      <h6 class="pt-1 pb-1 text-center" style="background:#82b8d6;"><span class="pl-3">Éditer votre profil</span></h6>
+      <div class="pt-2 pb-3 pl-3 pr-3">
+        <div style="width:150px;" class="m-auto text-center">
+          {% if app.user.image == "" %}
+          <img id="img_preview" src="{{ asset('images/feed/150.gif') }}" style="max-width:100%;height:150px;" />
+          {% else %}
+          <img id="img_preview" src="/uploads/profiles/{{app.user.image}}" style="max-width:100%;height:150px;" />
+          {% endif %}
+        </div> 
+        {{ form_start(form, {'attr': {'class': 'mt-3'}}) }} 
+          <div>
+              {{ form_errors(form.image) }}
+              <div class="d-flex align-items-center">
+                {{ form_label(form.image, null, { 'label_attr' : { 'class': 'border rounded-pill lbl-img p-2 mb-3' } }) }}
+                <div class="text-secondary ml-3">Taille max : 100Ko</div>
+              </div>
+              {{ form_widget(form.image, { 'attr': {'onchange': 'readURL(this);', 'class': 'd-none'} }) }}
+          </div>
+          {% if app.user.type == "0" %}
+          <div class="form-group">
+              <input name="firstname" class="form-control" placeholder="Prénom" value="{{ app.user.firstname }}" />
+          </div>
+          <div class="form-group">
+              <input name="lastname" class="form-control" placeholder="Nom" value="{{ app.user.lastname }}" />
+          </div>
+          {% endif %}
+          {% if app.user.type == "1" %}
+          <div class="form-group">
+              <input name="society_name" maxlength="50" class="form-control" placeholder="Nom de l'organisation" value="{{ app.user.name }}" />
+          </div>
+          {% endif %}
+          {% if form_errors(form.biography) %}
+          <div class="alert alert-danger">
+              {{ form_errors(form.biography) }}
+          </div>
+          {% endif %}
+          <div class="form-group">
+              {{ form_widget(form.biography, {'attr': {'class': 'form-control resize-none', 'placeholder': 'Biographie (200 caractères max)' } }) }}
+          </div>
+          {% if form_errors(form.postalCode) %}
+          <div class="alert alert-danger">
+              {{ form_errors(form.postalCode) }}
+          </div>
+          {% endif %}
+          <div class="form-group">
+              {{ form_widget(form.postalCode, {'attr': {'class': 'form-control', 'placeholder': 'Code postal' } }) }}
+          </div>
+          {% if form_errors(form.captchaCode) %}
+          <div class="alert alert-danger">
+              {{ form_errors(form.captchaCode) }}
+          </div>
+          {% endif %}
+          <div class="form-group">
+              {{ form_widget(form.captchaCode, {'attr': {'class': 'form-control', 'placeholder': 'Retapez le code...' } }) }}
+          </div>
+          <div>
+            <button type="submit" id="btn_valid" class="btn btn-reg form-control-sm rounded-pill pl-5 pr-5 mt-2" style="background:#eab0af;color:#fff;">Enregistrer</button>
+          </div>
+        {{ form_end(form) }}
+      </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,276 @@
+{% for post in posts %}
+{% if post.shared != "" %}
+    <div id="post_{{ post.id }}" class="mt-3 p-3 border rounded" style="background:#fff;">
+        <div class="d-flex border-bottom pb-3 justify-content-between">
+            <div class="d-flex">
+                {% if post.author.image != "" %}
+                <a href="{{ path('profile', {'username': post.author.username}) }}" style="width:50px;height:50px;">
+                    <img src="/uploads/profiles/{{post.author.image}}" class="rounded" style="width:100%;height:100%;"/>
+                </a>
+                {% else %}
+                <a href="{{ path('profile', {'username': post.author.username}) }}" style="width:50px;height:50px;">
+                    <img src="{{ asset('images/feed/user.png') }}" class="rounded" style="width:100%;height:100%;"/>
+                </a>
+                {% endif %}
+                <div class="ml-3 d-flex flex-column">
+                    <a href="{{ path('profile', {'username': post.author.username}) }}" style="font-size:15px;" class="font-weight-bold">{{ post.author.name }}</a>
+                    <a href="{{ path('post', {'username': post.author.username, 'id': post.id}) }}" style="font-size:12px;" class="pt-1">{{ post.date|date("d/m/y H:i") }}</a>
+                </div>
+            </div>
+            {% if post.author == app.user %}
+            <div data-id="{{post.id}}" onclick="deletePost(this);" style="width:10px;height:10px;cursor:pointer;" title="Supprimer cette publication">
+                <img src="{{ asset('images/feed/cross_delete.png') }}" style="width:100%;"/>
+            </div>
+            {% endif %}
+        </div>
+        <div class="d-flex pt-3">
+            {% if post.shared.post.author.image != "" %}
+            <a href="{{ path('profile', {'username': post.shared.post.author.username}) }}" style="width:50px;height:50px;">
+                <img src="/uploads/profiles/{{post.shared.post.author.image}}" class="rounded" style="width:100%;height:100%;"/>
+            </a>
+            {% else %}
+            <a href="{{ path('profile', {'username': post.shared.post.author.username}) }}" style="width:50px;height:50px;">
+                <img src="{{ asset('images/feed/user.png') }}" class="rounded" style="width:100%;height:100%;"/>
+            </a>
+            {% endif %}
+            <div class="ml-3 d-flex flex-column">
+                <a href="{{ path('profile', {'username': post.shared.post.author.username}) }}" style="font-size:15px;" class="font-weight-bold">{{ post.shared.post.author.name }}</a>
+                <a href="{{ path('post', {'username': post.shared.post.author.username, 'id': post.shared.post.id}) }}" style="font-size:12px;" class="pt-1">{{ post.shared.post.date|date("d/m/y H:i") }}</a>
+            </div>
+        </div>
+        <div class="mt-2">
+            {% if post.shared.post.content != "" %}
+            <div style="font-size:15px;line-height:19px;" class="text-break post-text">
+                {{ post.shared.post.content|raw }}
+            </div>
+            {% endif %}
+            {% if post.shared.post.image != "" %}
+            <div style="width:100%;" class="m-auto text-center border">
+                <img id="" src="/uploads/posts/{{ post.shared.post.image }}" style="max-width:100%;height:auto;" />
+            </div> 
+            {% endif %}
+        </div>
+        <div class="d-flex justify-content-between mt-2">
+            <div class="d-flex">
+                <img src="{{ asset('images/feed/like.png') }}" width="17" />
+                <div class="pl-1">{{ post.likes|length }}</div>
+            </div>
+            <div class="d-flex">
+                <div class="d-flex pr-3">
+                    <img src="{{ asset('images/feed/comment.png') }}" width="17" />
+                    <div class="pl-1">{{ post.comments|length }}</div>
+                </div>
+                <div class="d-flex">
+                    <img src="{{ asset('images/feed/share2.png') }}" width="17" />
+                    <div class="pl-1">{{ post.shared.post.shares|length }}</div>
+                </div>
+            </div>
+        </div>
+        <div class="d-flex border-top border-bottom mt-2">
+            {% set verif = 0 %}
+            {% for like in post.likes %}
+            {% if like.user.id == app.user.id %}
+            <div class="d-flex p-2 mt-1 mb-1 like-btn col-sm-4 justify-content-center" data-id="{{ post.id }}" onclick="sendLike(this);">
+                <img src="{{ asset('images/feed/break.png') }}" width="22" />
+                <div class="pl-2 font-weight-bold">Ne plus aimer</div>
+            </div>
+            {% set verif = 1 %}
+            {% endif %}
+            {% endfor %}
+            {% if verif == 0 %}
+            <div class="d-flex p-2 mt-1 mb-1 like-btn col-sm-4 justify-content-center" data-id="{{ post.id }}" onclick="sendLike(this);">
+                <img src="{{ asset('images/feed/like2.png') }}" width="22" />
+                <div class="pl-2 font-weight-bold">Aimer</div>
+            </div>
+            {% endif %}
+            <div class="d-flex p-2 mt-1 mb-1 comment-btn col-sm-4 justify-content-center" data-id="{{ post.id }}" onclick="commentClick(this);">
+                <img src="{{ asset('images/feed/comment2.png') }}" width="22" />
+                <div class="pl-2 font-weight-bold">Commenter</div>
+            </div>
+            <div class="d-flex p-2 mt-1 mb-1 share-btn col-sm-4 justify-content-center" data-id="{{ post.shared.post.id }}" onclick="sharePost(this);">
+                <img src="{{ asset('images/feed/share.png') }}" width="22" />
+                <div class="pl-2 font-weight-bold">Partager</div>
+            </div>
+        </div>
+        <div id="comments_{{ post.id }}" class="post-comments">
+            {% if post.comments|length >= 5 %}
+            {% set start = post.comments|length - 5 %}
+            {% else %}
+            {% set start = 0 %}
+            {% endif %}
+            {% for comment in post.comments|sort((a, b) => a.date <=> b.date)|slice(start, 5)|reverse %}
+            <div class="d-flex pt-2 mt-2" id="comment_{{comment.id}}">
+                {% if comment.author.image != "" %}
+                <a href="{{ path('profile', {'username': comment.author.username}) }}" style="width:40px;height:40px;">
+                    <img src="/uploads/profiles/{{comment.author.image}}" class="rounded" style="width:100%;height:100%;"/>
+                </a>
+                {% else %}
+                <a href="{{ path('profile', {'username': comment.author.username}) }}" style="width:40px;height:40px;">
+                    <img src="{{ asset('images/feed/user.png') }}" class="rounded" style="width:100%;height:100%;"/>
+                </a>
+                {% endif %}
+                <div class="p-2 ml-2 rounded col-sm-11" style="background:#f5f5f5;">
+                    <div class="d-flex justify-content-between">
+                        <div class="d-flex align-items-end">
+                            <a href="{{ path('profile', {'username': comment.author.username}) }}" style="font-size:13px;" class="font-weight-bold">@{{ comment.author.username }}</a>
+                            <div class="pl-3" style="font-size:11px;">{{ comment.date|date('d/m/y H:i') }}</div>
+                        </div>
+                        {% if comment.author == app.user or comment.post.author == app.user %}
+                        <div data-id="{{comment.id}}" data-post="{{comment.post.id}}" onclick="deleteComment(this);" style="width:8px;height:8px;cursor:pointer;" title="Supprimer ce commentaire">
+                            <img src="{{ asset('images/feed/cross_delete.png') }}" style="width:100%;"/>
+                        </div>
+                        {% endif %}
+                    </div>
+                    <div class="text-break">
+                        <div>{{ comment.content|raw }}</div>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        <div class="mt-2 more_com" id="fetchcom_{{ post.id }}" data-id="{{ post.id }}" data-offset="5" onclick="fetchComments(this);">Afficher plus de commentaires</div>
+        <div class="d-flex mt-2">
+            {% if app.user.image != "" %}
+            <a href="{{ path('profile', {'username': app.user.username}) }}" style="width:35px;height:35px;">
+                <img src="/uploads/profiles/{{app.user.image}}" class="rounded" style="width:100%;height:100%;"/>
+            </a>
+            {% else %}
+            <a href="{{ path('profile', {'username': app.user.username}) }}" style="width:35px;height:35px;">
+                <img src="{{ asset('images/feed/user.png') }}" class="rounded" style="width:100%;height:100%;"/>
+            </a>
+            {% endif %}
+            <div contenteditable="true" id="comment-box_{{ post.id }}" data-id="{{ post.id }}" ondrop="return false;" role="textbox" class="border rounded ml-2 comment-box" style="min-height:10px;width:90%;padding:3px;color:#000;background:#f5f5f5;"></div>
+        </div>
+    </div>
+
+    {% else %}
+
+    <div id="post_{{ post.id }}" class="mt-3 p-3 border rounded" style="background:#fff;">
+        <div class="d-flex justify-content-between">
+            <div class="d-flex">
+                {% if post.author.image != "" %}
+                <a href="{{ path('profile', {'username': post.author.username}) }}" style="width:50px;height:50px;">
+                    <img src="/uploads/profiles/{{post.author.image}}" class="rounded" style="width:100%;height:100%;"/>
+                </a>
+                {% else %}
+                <a href="{{ path('profile', {'username': post.author.username}) }}" style="width:50px;height:50px;">
+                    <img src="{{ asset('images/feed/user.png') }}" class="rounded" style="width:100%;height:100%;"/>
+                </a>
+                {% endif %}
+                <div class="ml-3 d-flex flex-column">
+                    <a href="{{ path('profile', {'username': post.author.username}) }}" style="font-size:15px;" class="font-weight-bold">{{ post.author.name }}</a>
+                    <a href="{{ path('post', {'username': post.author.username, 'id': post.id}) }}" style="font-size:12px;" class="pt-1">{{ post.date|date("d/m/y H:i") }}</a>
+                </div>
+            </div>
+            {% if post.author == app.user %}
+            <div data-id="{{post.id}}" onclick="deletePost(this);" style="width:10px;height:10px;cursor:pointer;" title="Supprimer cette publication">
+                <img src="{{ asset('images/feed/cross_delete.png') }}" style="width:100%;"/>
+            </div>
+            {% endif %}
+        </div>
+        <div class="mt-2">
+            {% if post.content != "" %}
+            <div style="font-size:15px;line-height:19px;" class="text-break post-text">
+                {{ post.content|raw }}
+            </div>
+            {% endif %}
+            {% if post.image != "" %}
+            <div style="width:100%;" class="m-auto text-center border">
+                <img id="" src="/uploads/posts/{{ post.image }}" style="max-width:100%;height:auto;" />
+            </div> 
+            {% endif %}
+        </div>
+        <div class="d-flex justify-content-between mt-2">
+            <div class="d-flex">
+                <img src="{{ asset('images/feed/like.png') }}" width="17" />
+                <div class="pl-1">{{ post.likes|length }}</div>
+            </div>
+            <div class="d-flex">
+                <div class="d-flex pr-3">
+                    <img src="{{ asset('images/feed/comment.png') }}" width="17" />
+                    <div class="pl-1">{{ post.comments|length }}</div>
+                </div>
+                <div class="d-flex">
+                    <img src="{{ asset('images/feed/share2.png') }}" width="17" />
+                    <div class="pl-1">{{ post.shares|length }}</div>
+                </div>
+            </div>
+        </div>
+        <div class="d-flex border-top border-bottom mt-2">
+            {% set verif = 0 %}
+            {% for like in post.likes %}
+            {% if like.user.id == app.user.id %}
+            <div class="d-flex p-2 mt-1 mb-1 like-btn col-sm-4 justify-content-center" data-id="{{ post.id }}" onclick="sendLike(this);">
+                <img src="{{ asset('images/feed/break.png') }}" width="22" />
+                <div class="pl-2 font-weight-bold">Ne plus aimer</div>
+            </div>
+            {% set verif = 1 %}
+            {% endif %}
+            {% endfor %}
+            {% if verif == 0 %}
+            <div class="d-flex p-2 mt-1 mb-1 like-btn col-sm-4 justify-content-center" data-id="{{ post.id }}" onclick="sendLike(this);">
+                <img src="{{ asset('images/feed/like2.png') }}" width="22" />
+                <div class="pl-2 font-weight-bold">Aimer</div>
+            </div>
+            {% endif %}
+            <div class="d-flex p-2 mt-1 mb-1 comment-btn col-sm-4 justify-content-center" data-id="{{ post.id }}" onclick="commentClick(this);">
+                <img src="{{ asset('images/feed/comment2.png') }}" width="22" />
+                <div class="pl-2 font-weight-bold">Commenter</div>
+            </div>
+            <div class="d-flex p-2 mt-1 mb-1 share-btn col-sm-4 justify-content-center" data-id="{{ post.id }}" onclick="sharePost(this);">
+                <img src="{{ asset('images/feed/share.png') }}" width="22" />
+                <div class="pl-2 font-weight-bold">Partager</div>
+            </div>
+        </div>
+        <div id="comments_{{ post.id }}" class="post-comments">
+            {% if post.comments|length >= 5 %}
+            {% set start = post.comments|length - 5 %}
+            {% else %}
+            {% set start = 0 %}
+            {% endif %}
+            {% for comment in post.comments|sort((a, b) => a.date <=> b.date)|slice(start, 5)|reverse %}
+            <div class="d-flex pt-2 mt-2" id="comment_{{comment.id}}">
+                {% if comment.author.image != "" %}
+                <a href="{{ path('profile', {'username': comment.author.username}) }}" style="width:40px;height:40px;">
+                    <img src="/uploads/profiles/{{comment.author.image}}" class="rounded" style="width:100%;height:100%;"/>
+                </a>
+                {% else %}
+                <a href="{{ path('profile', {'username': comment.author.username}) }}" style="width:40px;height:40px;">
+                    <img src="{{ asset('images/feed/user.png') }}" class="rounded" style="width:100%;height:100%;"/>
+                </a>
+                {% endif %}
+                <div class="p-2 ml-2 rounded col-sm-11" style="background:#f5f5f5;">
+                    <div class="d-flex justify-content-between">
+                        <div class="d-flex align-items-end">
+                            <a href="{{ path('profile', {'username': comment.author.username}) }}" style="font-size:13px;" class="font-weight-bold">@{{ comment.author.username }}</a>
+                            <div class="pl-3" style="font-size:11px;">{{ comment.date|date('d/m/y H:i') }}</div>
+                        </div>
+                        {% if comment.author == app.user or comment.post.author == app.user %}
+                        <div data-id="{{comment.id}}" data-post="{{comment.post.id}}" onclick="deleteComment(this);" style="width:8px;height:8px;cursor:pointer;" title="Supprimer ce commentaire">
+                            <img src="{{ asset('images/feed/cross_delete.png') }}" style="width:100%;"/>
+                        </div>
+                        {% endif %}
+                    </div>
+                    <div class="text-break">
+                        <div>{{ comment.content|raw }}</div>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        <div class="mt-2 more_com" id="fetchcom_{{ post.id }}" data-id="{{ post.id }}" data-offset="5" onclick="fetchComments(this);">Afficher plus de commentaires</div>
+        <div class="d-flex mt-2">
+            {% if app.user.image != "" %}
+            <a href="{{ path('profile', {'username': app.user.username}) }}" style="width:35px;height:35px;">
+                <img src="/uploads/profiles/{{app.user.image}}" class="rounded" style="width:100%;height:100%;"/>
+            </a>
+            {% else %}
+            <a href="{{ path('profile', {'username': app.user.username}) }}" style="width:35px;height:35px;">
+                <img src="{{ asset('images/feed/user.png') }}" class="rounded" style="width:100%;height:100%;"/>
+            </a>
+            {% endif %}
+            <div contenteditable="true" id="comment-box_{{ post.id }}" data-id="{{ post.id }}" ondrop="return false;" role="textbox" class="border rounded ml-2 comment-box" style="min-height:10px;width:90%;padding:3px;color:#000;background:#f5f5f5;"></div>
+        </div>
+    </div>
+    {% endif %}
+{% endfor %}

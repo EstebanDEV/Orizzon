@@ -1,0 +1,20 @@
+{% for discussion in discussions %}
+<a href="{{ path('chat_user', {'username': discussion.user.username }) }}" style="text-decoration:none;" class="list-box-msg d-flex border-bottom p-3 justify-content-between align-items-end">
+    <div class="d-flex">
+        {% if discussion.user.image != "" %}
+        <div style="width:50px;height:50px;">
+            <img src="/uploads/profiles/{{discussion.user.image}}" class="rounded" style="width:100%;height:100%;" />
+        </div>
+        {% else %}
+        <div style="width:50px;height:50px;">
+            <img src="{{ asset('images/feed/user.png') }}" class="rounded" style="width:100%;" />
+        </div>
+        {% endif %}
+        <div class="pl-2">
+            <div style="font-size:16px;"><strong>{{ discussion.user.name }}</strong></div>
+            <div>@{{ discussion.user.username }}</div>
+        </div>
+    </div>
+    <div>Dernier message reçu le {{ discussion.date|date('d/m/y') }} à {{ discussion.date|date('H:i') }}</div>
+</a>
+{% endfor %}

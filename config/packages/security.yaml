@@ -1,0 +1,46 @@
+security:
+    # https://symfony.com/doc/current/security.html#where-do-users-come-from-user-providers
+    role_hierarchy:
+        # un membre avec le ROLE_ADMIN aura également le ROLE_USER
+        ROLE_ADMIN: ROLE_USER
+        # Le ROLE_SUPER_ADMIN avec le ROLE_ALLOWED_TO_SWITCH qui permet de s'authentifier en se faisant passer pour n'importe quel membre. Particulièrement utile pour débugger son code.
+        ROLE_SUPER_ADMIN: [ROLE_USER, ROLE_ADMIN, ROLE_ALLOWED_TO_SWITCH]
+    encoders:
+        App\Entity\User: 
+            algorithm: auto
+    providers:
+        our_db_provider:
+            entity:
+                class: App\Entity\User
+    firewalls:
+        dev:
+            pattern: ^/(_(profiler|wdt)|css|images|js)/
+            security: false
+        main:
+            pattern: ^/
+            user_checker: App\Security\UserChecker
+            http_basic: ~
+            provider: our_db_provider
+            anonymous: true
+            # activate different ways to authenticate
+            # https://symfony.com/doc/current/security.html#firewalls-authentication
+            form_login:
+                login_path: /
+                check_path: /
+                csrf_token_generator: security.csrf.token_manager
+                default_target_path: /check_last_login
+            logout:
+                path: /logout
+                target: /
+            remember_me:
+                secret:   '%kernel.secret%'
+                lifetime: 31536000
+                path: /
+            # https://symfony.com/doc/current/security/impersonating_user.html
+            switch_user: true
+
+    # Easy way to control access for large sections of your site
+    # Note: Only the *first* access control that matches will be used
+    access_control:
+        - { path: ^/admin, roles: ROLE_ADMIN }
+        # - { path: ^/profile, roles: ROLE_USER }

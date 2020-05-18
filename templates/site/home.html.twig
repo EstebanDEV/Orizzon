@@ -1,0 +1,121 @@
+{% extends 'global.html.twig' %}
+
+{% block title %}Orizzon{% endblock %}
+
+{% block content %}
+<div class="col-sm-9 pt-2">
+    <img src="{{ asset('images/logo2.png') }}" alt="Logo" width="45" height="40" style="cursor:pointer;" />
+    <div class="progress mb-3">
+    <div class="progress-bar progress-bar-striped bg-danger" role="progressbar" aria-valuenow="80" aria-valuemin="0" aria-valuemax="100" style="width: 80%">
+        <span class="sr-only"></span>
+    </div>
+    <span class="progress-type">Emissions kwts</span>
+    <span class="progress-completed">80%</span>
+    </div>
+    {% for message in app.flashes('error') %}
+    <div class="alert alert-danger">
+        {{ message }}
+    </div>
+    {% endfor %}
+    {% for message in app.flashes('success') %}
+    <div class="alert alert-success">
+        {{ message }}
+    </div>
+    {% endfor %}
+    <div class="border rounded" style="background:#fff;">
+        <h6 class="pt-1 pb-1" style="background:#82b8d6;"><span class="pl-3">Créer une publication</span></h6>
+        <div class="d-flex flex-column pb-2 pr-3 pl-3 pt-3">  
+            <div class="d-flex mb-2">
+                {% if app.user.image != "" %}
+                <a href="{{ path('profile', {'username': app.user.username}) }}"> 
+                    <img src="uploads/profiles/{{app.user.image}}" class="rounded" alt="Profil" width="50" height="50" />
+                </a>
+                {% else %}
+                <a href="{{ path('profile', {'username': app.user.username}) }}"> 
+                    <img src="{{ asset('images/feed/user.png') }}" alt="Profil" width="50" />
+                </a>
+                {% endif %}
+                <div class="col-sm-11">
+                    <div contenteditable="true" id="post_container" ondrop="return false;" aria-multiline="true" role="textbox" style="min-height:50px;padding:3px;font-size:17px;color:#000;"><span class="text_post"><br></span></div>
+                    <div id="post_contenteditable_placeholder" data-placeholder="Que faites-vous aujourd'hui?"></div>
+                </div>
+            </div>
+            <div style="width:100%;" class="m-auto text-center border-bottom">
+                <img id="img_preview" src="{{ asset('images/feed/blanc.jpg') }}" style="max-width:100%;height:auto;" />
+            </div> 
+            {{ form_start(form, { 'attr' : { 'class': 'mt-1 d-flex justify-content-between' } }) }}
+                <div>
+                    {{ form_errors(form.image) }}
+                    {{ form_label(form.image, null, { 'label_attr' : { 'class': 'border rounded-pill lbl-img' } }) }}
+                    {{ form_widget(form.image, { 'attr': {'onchange': 'readURL(this);', 'class': 'd-none'} }) }}
+                </div>
+                <div>
+                    <button type="submit" id="post_submit" onclick="sendPost();" class="btn btn-reg form-control-sm rounded-pill pl-5 pr-5 mt-3" style="background:#eab0af;color:#fff;">Publier</button>
+                </div>
+            {{ form_end(form) }}
+        </div>
+</div>
+<div class="mt-3 pb-2" id="posts"> 
+  <div class="mt-3 p-3 border rounded text-center" style="background:#fff;">
+    <img src="{{ asset('images/feed/ajax-loader.gif') }}">
+  </div>
+</div>
+<div class="col-sm-12 text-center mt-2 mb-3 border pt-2 pb-2 rounded" data-offset="5" id="more_post" onclick="fetchPosts();" style="background:#fff">Afficher plus de publications</div>
+</div>
+{% endblock %}
+{% block script %}
+<script>
+var commentsBox = "";
+
+$(document).ready(function() {
+    $.ajax({
+        url : "{{ path('ajax_feed_posts') }}",
+        type : 'POST',
+        data : {
+            'date' :  encodeURIComponent(unixDate),
+            'offset' :  0
+        },
+        dataType : 'html',              
+    }).done(function(html) {
+        $('#posts').html(html); 
+        commentsBox = document.getElementsByClassName('comment-box');
+        for (var i = 0; i < commentsBox.length; i++) {
+            commentsBox[i].addEventListener('keypress', sendComment, false);
+            commentsBox[i].addEventListener('paste', handlePasteCom, false);
+        }
+    });
+});
+
+$('.lbl-img').prepend("<img src='{{ asset('images/feed/upload_img.png') }}' class='pr-1' width='17'/>");
+
+document.getElementById("post_container").addEventListener("input", function() {
+    if (document.getElementById("post_container").innerHTML != "") {
+        $('#post_contenteditable_placeholder').hide();
+    } 
+}, false);
+$('#post_container').on("click", function() {
+    if (document.getElementById("post_container").innerHTML == "") {
+        $('#post_container').append('<span class="text_post"><br></span>');     
+    }
+});
+$('#post_container').on("contextmenu", function() {
+    if (document.getElementById("post_container").innerHTML == "") {
+        $('#post_container').append('<span class="text_post"><br></span>');
+    }
+});
+
+document.getElementById('post_container').addEventListener('paste', handlePaste);
+$('#post_container').bind("DOMSubtreeModified",function(){
+    NodeList.prototype.forEach = Array.prototype.forEach;
+    var els = document.querySelectorAll('div#post_container > span.text_post');
+    var i = 0;
+    els.forEach(function(el) {
+        i++;
+    });
+    if (document.getElementById("post_container").innerHTML == "")  {
+        $("#post_contenteditable_placeholder").removeAttr("style");
+        $('#post_container').append('<span class="text_post"><br></span>');
+    }
+});
+</script>
+{% endblock %}

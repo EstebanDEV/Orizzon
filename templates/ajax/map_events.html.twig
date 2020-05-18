@@ -1,0 +1,3 @@
+{% for event in events %}
+<event <id>{{ event.id }}</id> <title>{{ event.name|raw }}</title> <lat>{{ event.latitude }}</lat> <lng>{{ event.longitude }}</lng>
+{% endfor %}

@@ -1,0 +1,18 @@
+{% for event in events %}
+<div class="rounded border mt-3" style="background:#fff;">
+    <div class="pt-2 pb-3 pl-3 pr-3">
+        {% if event.image != "" %}
+        <a href="{{ path('profile_event', {'id': event.id }) }}" class="m-auto" style="width:550px;">
+            <img src="/uploads/events/{{event.image}}" class="rounded" style="width:100%;max-height:400px;"/>
+        </a>
+        {% endif %}
+        <a href="{{ path('profile_event', {'id': event.id }) }}" class="font-weight-bold mt-2 text-break" style="font-size:18px;">{{ event.name }}</a>
+        <div class="mt-1 text-secondary">Organisé par <a style="color:#82b8d6;" href="{{ path('profile', {'username': event.user.username}) }}">{{ event.user.name }}</a></div>
+
+        <div class="border-top border-bottom mt-3 mb-3 pt-3 pb-3">
+            <div class="text-break">{{ event.content }}</div>
+        </div>
+        <a style="color:#82b8d6;" href="{{ path('profile_event', {'id': event.id }) }}">En savoir plus...</a>
+    </div>
+</div>
+{% endfor %}

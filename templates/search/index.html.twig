@@ -1,0 +1,62 @@
+{% extends 'global.html.twig' %}
+
+{% block title %}Résultats pour {{ result }}{% endblock %}
+
+{% block content %}
+<div class="col-sm-9 pt-3">
+  <div class="rounded border" style="background:#fff;" id="searchs">
+      <div class="p-3 text-center" style="background:#fff;">
+        <img src="{{ asset('images/feed/ajax-loader.gif') }}">
+      </div>
+  </div>
+  <div class="col-sm-12 text-center mt-2 mb-3 border pt-2 pb-2 rounded" data-offset="10" id="more_search" onclick="fetchSearchs();" style="background:#fff">Afficher plus de résultats</div>
+</div>
+{% endblock %}
+{% block script %}
+<script>
+$(document).ready(function(){
+  $.ajax({
+    url : "{{ path('ajax_fetch_searchs') }}",
+    type : 'POST',
+    data : {
+        'offset' : encodeURIComponent(0),
+        'content' : encodeURIComponent('{{ result }}')
+    },
+    dataType : 'html',              
+  }).done(function(html) {
+      if (html == "") {
+          $('#searchs').html('<div class="text-center p-2">Aucun résultat pour cette recherche.</div>');
+      } else {
+          $('#searchs').html(html);
+      }
+  });
+});
+
+var loadSearchs = false;
+
+function fetchSearchs() {
+    if (loadSearchs == false) {
+        loadSearchs = true;
+        $('#more_search').html('<img src="http://127.0.0.1:8000/images/feed/ajax-loader.gif" />');
+        $.ajax({
+            url : "{{ path('ajax_fetch_searchs') }}",
+            type : 'POST',
+            data : {
+                'offset' :  encodeURIComponent($('#more_search').data('offset')),
+                'content' : encodeURIComponent('{{ result }}')
+            },
+            dataType : 'html',              
+        }).done(function(html) {
+            if (html == "") {
+                $('#more_search').remove(); 
+            } else {
+                $('#searchs').append(html); 
+                $('#more_search').html('Afficher plus de résultats');
+                $('#more_search').data('offset', $('#more_search').data('offset') + 10);
+                loadSearchs = false;
+            }
+        });
+    }
+}
+</script>
+{% endblock %}

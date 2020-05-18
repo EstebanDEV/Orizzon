@@ -1,0 +1,202 @@
+{% extends 'global.html.twig' %}
+
+{% block title %}{{ userProfile.name }} (@{{ userProfile.username }}){% endblock %}
+
+{% block content %}
+<div class="col-sm-9 pt-3">
+    {% for message in app.flashes('error') %}
+    <div class="alert alert-danger">
+        {{ message }}
+    </div>
+    {% endfor %}
+    {% for message in app.flashes('success') %}
+    <div class="alert alert-success">
+        {{ message }}
+    </div>
+    {% endfor %}
+    <div class="rounded border" style="background:#fff;">
+        <h6 class="pt-1 pb-1 text-center" style="background:#82b8d6;"><span class="pl-3">Informations sur {{ userProfile.name }}</span></h6>
+        <div class="pt-2 pb-3 pl-3 pr-3">
+          <div class="d-flex">
+              <div class="" style="width:100px;height:100px;">
+                  {% if userProfile.image != "" %}
+                  <img src="/uploads/profiles/{{userProfile.image}}" class="rounded" style="width:100%;"/>
+                  {% else %}
+                  <img src="{{ asset('images/feed/user.png') }}" class="rounded" style="width:100%;"/>
+                  {% endif %}
+              </div>
+              <div class="pl-3 col-sm-10">
+                  <div class="font-weight-bold" style="font-size:18px;">{{ userProfile.name }}</div>
+                  <div>@{{ userProfile.username }}</div>
+                  <div class="mt-3 text-break">
+                      <div>{{ userProfile.biography }}</div>
+                  </div>
+                  <div class="d-flex justify-content-between mt-3">
+                      <div class="d-flex">
+                        <a href="{{ path('profile_followings', {'username': userProfile.username}) }}"><strong>{{ userProfile.subscribers|length }}</strong> abonnements</a>
+                        <a href="{{ path('profile_followers', {'username': userProfile.username}) }}" class="pl-3"><strong>{{ userProfile.subscriptions|length }}</strong> suiveurs</a>
+                      </div>
+                      <div class="d-flex align-items-end">
+                        <div style="width:20px;height:20px;">
+                          <img src="{{ asset('images/feed/score.png') }}" class="rounded" style="width:100%;"/>
+                        </div>
+                        <div class="pl-2">Score : {{ userProfile.score }} pts</div>
+                      </div>
+                  </div>
+              </div>
+          </div>
+          {% set verif = 0 %}
+          {% for subscribe in app.user.subscribers %}
+          {% if subscribe.subscription.id == userProfile.id and app.user.id != userProfile.id %}
+          {% set verif = 1 %}
+          {% endif %}
+          {% endfor %}
+
+          {% set verif2 = 0 %}
+          {% for target in app.user.targetsPrv %}
+          {% if target.user.id == userProfile.id and app.user.id != userProfile.id  %}
+          {% set verif2 = 1 %}
+          {% endif %}
+          {% endfor %}
+
+          {% set verif3 = 0 %}
+          {% for sender in app.user.sendersPrv %}
+          {% if sender.userTarget.id == userProfile.id and app.user.id != userProfile.id  %}
+          {% set verif3 = 1 %}
+          {% endif %}
+          {% endfor %}
+
+          {% if app.user.id == userProfile.id %}
+          <div class="mt-3 d-flex justify-content-between">
+              <div></div>
+              <a href="{{ path('profile_settings_general') }}" id="edit_btn" style="background:#eab0af;color:#fff;" class="rounded-pill p-2">Modifier mon profil</a>
+          </div>
+          {% endif %}
+
+          {% if verif == 1  %}
+          <div class="mt-3 d-flex justify-content-between">
+              <div></div>
+              <div data-id="{{ userProfile.id }}" onclick="subscribe(this);" style="background:#eab0af;color:#fff;cursor:pointer;" id="subscribe_btn" class="rounded-pill p-2">Se désabonner</div>
+          </div>
+          {% endif %}
+          {% if verif == 0 and verif2 == 0 and userProfile.private == 0 and app.user.id != userProfile.id %}
+          <div class="mt-3 d-flex justify-content-between">
+              <div></div>
+              <div data-id="{{ userProfile.id }}" onclick="subscribe(this);" style="background:#eab0af;color:#fff;cursor:pointer;" id="subscribe_btn" class="rounded-pill p-2">S'abonner</div>
+          </div>
+          {% endif %}
+
+          {% if verif3 == 1 %}
+          <div class="mt-3 d-flex justify-content-between">
+              <div></div>
+              <div data-id="{{ userProfile.id }}" onclick="subscribe(this);" class="rounded border font-weight-bold p-2">Annuler la demande</div>
+          </div>
+          {% endif %}
+          {% if  verif == 0 and verif2 == 0 and verif3 == 0  and userProfile.private == 1 and app.user.id != userProfile.id %}
+          <div class="mt-3 d-flex justify-content-between">
+              <div></div>
+              <div data-id="{{ userProfile.id }}" onclick="subscribe(this);" class="rounded-pill p-2">Envoyer une demande</div>
+          </div>
+          {% endif %}
+
+          {% if verif2 == 1 %}
+          <div class="mt-3 d-flex justify-content-between">
+              <div></div>
+              <div data-id="{{ userProfile.id }}" data-response="1" onclick="reqPrvResponse(this);" class="rounded border font-weight-bold p-2">Accepter</div>
+          </div>
+          <div class="mt-3 d-flex justify-content-between">
+              <div></div>
+              <div data-id="{{ userProfile.id }}" data-response="0" onclick="reqPrvResponse(this);" class="rounded border font-weight-bold p-2">Refuser</div>
+          </div>
+          {% endif %}
+          {% if app.user != userProfile %}
+          <div class="mt-3 d-flex justify-content-between">
+              <div></div>
+              <a href="{{ path('chat_user', {'username': userProfile.username}) }}" style="background:#82b8d6;color:#fff;cursor:pointer;" id="sendmsg_btn" class="rounded-pill p-2">Envoyer un message</a>
+          </div>
+          {% endif %}
+        </div>
+    </div>
+    {% if verif == 0 and userProfile.private == 1 and userProfile.id != app.user.id %}
+    <div class="pb-2 mt-3" id="posts"> 
+      <div class="mt-3 p-3 border rounded text-center" style="background:#fff;">
+        Ce compte est privé.
+      </div>
+    </div>
+    {% else %}
+    <div class="pb-2 mt-3" id="posts"> 
+      <div class="mt-3 p-3 border rounded text-center" style="background:#fff;">
+        <img src="{{ asset('images/feed/ajax-loader.gif') }}">
+      </div>
+    </div>
+    <div class="col-sm-12 text-center mt-2 mb-3 border pt-2 pb-2 rounded" data-offset="5" id="more_post" onclick="fetchUserPosts();" style="background:#fff;cursor:pointer;">Afficher plus de publications</div>
+    {% endif %}
+</div>
+{% endblock %}
+{% block script %}
+          
+{% set verif = 0 %}
+{% for subscribe in app.user.subscribers %}
+{% if subscribe.subscription.id == userProfile.id and app.user.id != userProfile.id %}
+{% set verif = 1 %}
+{% endif %}
+{% endfor %}
+
+<script>
+var commentsBox = "";
+var loadPosts = false;
+
+{% if verif != 0 and userProfile.private != 1 or verif == 0 and userProfile.private != 1 or verif == 1 or app.user.id == userProfile.id %}
+$(document).ready(function() {
+  $.ajax({
+      url : "{{ path('ajax_user_posts') }}",
+      type : 'POST',
+      data : {
+          'date' :  encodeURIComponent(unixDate),
+          'offset' :  0,
+          'user' :  encodeURIComponent({{ userProfile.id }})
+      },
+      dataType : 'html',              
+  }).done(function(html) {
+      $('#posts').html(html); 
+          commentsBox = document.getElementsByClassName('comment-box');
+          for (var i = 0; i < commentsBox.length; i++) {
+              commentsBox[i].addEventListener('keypress', sendComment, false);
+              commentsBox[i].addEventListener('paste', handlePasteCom, false);
+          }
+  });
+});
+
+function fetchUserPosts() {
+    if (loadPosts == false) {
+        loadPosts = true;
+        $('#more_post').html('<img src="http://127.0.0.1:8000/images/feed/ajax-loader.gif">');
+        $.ajax({
+            url : "{{ path('ajax_user_posts') }}",
+            type : 'POST',
+            data : {
+                'date' :  encodeURIComponent(unixDate),
+                'offset' :  encodeURIComponent($('#more_post').data('offset')),
+                'user' :  encodeURIComponent({{ userProfile.id }})
+            },
+            dataType : 'html',              
+        }).done(function(html) {
+            $('#posts').append(html); 
+            if (html == "") {
+                $('#more_post').remove(); 
+            } else {
+                $('#more_post').html('Afficher plus de publications');
+                commentsBox = document.getElementsByClassName('comment-box');
+                for (var i = 0; i < commentsBox.length; i++) {
+                    commentsBox[i].addEventListener('keypress', sendComment, false);
+                    commentsBox[i].addEventListener('paste', handlePasteCom, false);
+                }
+                $('#more_post').data('offset', $('#more_post').data('offset') + 5);
+                loadPosts = false;
+            }
+        });
+    }
+}
+{% endif %}
+</script>
+{% endblock %}

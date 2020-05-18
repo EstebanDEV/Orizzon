@@ -1,0 +1,79 @@
+{% extends 'global.html.twig' %}
+
+{% block title %}{{ eventSelect.name }}{% endblock %}
+
+{% block content %}
+<div class="col-sm-9 pt-3">
+    {% for message in app.flashes('error') %}
+    <div class="alert alert-danger">
+        {{ message }}
+    </div>
+    {% endfor %}
+    {% for message in app.flashes('success') %}
+    <div class="alert alert-success">
+        {{ message }}
+    </div>
+    {% endfor %}
+    <div class="rounded border" style="background:#fff;">
+        <h6 class="pt-1 pb-1 text-center" style="background:#82b8d6;"><span class="pl-3">Présentation de l'événement</span></h6>
+        <div class="pt-2 pb-3 pl-3 pr-3">
+          {% if eventSelect.image != "" %}
+          <div class="m-auto" style="width:550px;">
+              <img src="/uploads/events/{{eventSelect.image}}" class="rounded" style="width:100%;max-height:400px;"/>
+          </div>
+          {% endif %}
+          <div>
+            <div class="font-weight-bold mt-2 text-break" style="font-size:18px;">{{ eventSelect.name }}</div>
+            <div class="mt-1 text-secondary">Organisé par <a style="color:#82b8d6;" href="{{ path('profile', {'username': eventSelect.user.username}) }}">{{ eventSelect.user.name }}</a></div>
+            
+            {% set verif = 0 %}
+            {% for participate in eventSelect.participants %}
+            {% if participate.participant.id == app.user.id and app.user.id != eventSelect.user.id %}
+            {% set verif = 1 %}
+            {% endif %}
+            {% endfor %}
+
+            {% if app.user == eventSelect.user %}
+            <div class="mt-4 mb-4">
+              <a href="{{ path('edit_event', {'id': eventSelect.id}) }}" id="edit_btn" style="background:#eab0af;color:#fff;" class="rounded-pill pl-3 pr-3 pt-2 pb-2">Éditer l'événement</a>
+            </div>
+            {% endif %}
+            {% if app.user != eventSelect.user and verif == 0 %}
+            <div class="mt-3 mb-3 col-sm-4 p-0">
+                <div data-id="{{ eventSelect.id }}" id="participate_btn" style="background:#eab0af;color:#fff;cursor:pointer;" onclick="participate(this);" class="rounded-pill p-2 text-center">Participer</div>
+            </div>
+            {% endif %}
+            {% if verif == 1 %}
+              <div class="mt-3 mb-3 col-sm-4 p-0">
+                  <div data-id="{{ eventSelect.id }}" id="participate_btn" style="background:#eab0af;color:#fff;cursor:pointer;" onclick="participate(this);" class="rounded-pill p-2 text-center">Ne plus participer</div>
+              </div>
+            {% endif %}
+            <div class="border-top border-bottom mt-3 mb-3 pt-3 pb-3">
+              <div class="text-break">{{ eventSelect.content }}</div>
+            </div>
+            <div class="d-flex justify-content-between">
+                <div class="d-flex align-items-start">
+                  <div style="width:15px;height:15px;">
+                    <img src="{{ asset('images/feed/hour_event.png') }}" class="rounded" style="width:100%;"/>
+                  </div>
+                  <div class="pl-2">Le {{ eventSelect.date|date('d/m/y') }} à {{ eventSelect.date|date('H:i') }}</div>
+                </div>
+            </div>
+            <div class="d-flex justify-content-between mt-3">
+                <div class="d-flex align-items-start">
+                  <div style="width:15px;height:15px;">
+                    <img src="{{ asset('images/feed/place_event.png') }}" class="rounded" style="width:100%;"/>
+                  </div>
+                  <div class="pl-2">Lieu : {{ eventSelect.address }}</div>
+                </div>
+            </div>
+          </div>
+        </div>
+    </div>
+    <div class="rounded border mt-3" style="background:#fff;">
+        <div class="pt-2 pb-3 pl-3 pr-3">
+          <div class="font-weight-bold border-bottom pb-2 mb-2" style="font-size:15px;">{{ eventSelect.participants|length}} participants</div>
+        </div>
+    </div>
+</div>
+{% endblock %}
